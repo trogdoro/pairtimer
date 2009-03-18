@@ -1,0 +1,93 @@
+<html>
+  <head>
+    <title>pairtimer.com</title>
+    <script type="text/javascript" src="jquery.js"></script>
+    <script type="text/javascript" src="pairtimer.js"></script>
+    <script type="text/javascript" src="jquery.tabify-1.4.source.js"></script>
+    <style>
+      body { padding:0px; background-color:#eee; }
+      body, td { font-family:verdana; font-size:13px; }
+      body, td, textarea { color:#333; border:0px;}
+      .section { margin:10px }
+      #adds { width:40px; height:110px; padding:2px; color:#55e; text-decoration:underline; cursor:pointer; }
+      #presets { width:320px; height:110px; padding:2px; }
+      #timers { width:100%; height:150px; padding:2px; background-color:#eee; }
+      #adds, #presets { background-color:#dde; }
+      textarea { font-size:15px; font-weight:bold; overflow:hidden; font-family:courier; }
+      #increment { width:20px; text-align:center; }
+      #menu { padding:0; }
+      #menu li { display:inline; }
+      #menu li a { background:#ccf; padding:10px; float:left; border-right:1px solid #ccf; border-bottom:none; text-decoration:none; color:#000; font-weight:bold; font-size:12px;}
+      #menu li.active a { background:#dde; }
+      .content { float:left; clear:both; border:1px solid #ccf; border-top:none; border-left:none; background:#dde; padding:8px 12px 0; width:360px; margin:0 0 5px 0;}
+    </style>
+  </head>
+  <body>
+    <div style='width:380px; margin:0 auto;'>
+
+      <ul id="menu">
+        <li class="active"><a href="#pairing">Pair Programming</a></li>
+        <li><a href="#general">General</a></li>
+        <li><a href="#yours">Yours</a></li>
+      </ul>
+
+      <div class="content" id="pairing">
+        <table><tr>
+          <td><textarea id='adds'></textarea></td>
+          <td><textarea id='presets'>plan 0:30  (0:15 warning)
+pairing cycle  6:00
+1:00 task  (0:30 warning)
+1:30 task  (0:45 warning)
+2:00 task  (1:00 warning)
+3:00 task  (1:30 warning)
+4:00 break (2:00 warning)
+</textarea></td>
+        </tr></table>
+      </div>
+
+      <div class="content" id="general">
+        <table><tr>
+          <td><textarea id='adds'></textarea></td>
+          <td><textarea id='presets'>1:00
+2:00
+3:00
+4:00
+5:00
+10:00
+</textarea></td>
+        </tr></table>
+      </div>
+
+      <div class="content" id="yours">
+        <table><tr>
+          <td><textarea id='adds'></textarea></td>
+          <td><textarea id='presets'>1:00
+2:00
+Add more here
+</textarea></td>
+        </tr></table>
+      </div>
+
+
+      <p style='clear:both'/>
+
+      <button id='more'>+ preset</button>
+      <button id='clear'>clear</button>
+      <button id='clear_expired'>clear expired</button>
+      <p/>
+      <textarea id='timers'></textarea>
+
+      <div style='text-align:center;'>
+        Decrement every <input id='increment' value='1'> seconds
+        <br/>
+        <a href="javascript:pop_up('index.html')">Open in Small Popup Window</a>
+        <br/>
+        <a href="javascript:examples()">Show Examples</a>
+        <p/>
+        (currently works well in firefox only)
+      </div>
+
+      <form><span id='soundspan'></span></form>
+    </div>
+  </body>
+</html>
