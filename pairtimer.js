@@ -156,7 +156,9 @@ $(function() {
   setup_events();
 
   sounds = ['one.mp3', 'two.mp3', 'three.mp3', 'four.mp3'];
-  welcome = "Welcome to pairtimer.com!\nClick an 'add' link.\nOptionally, you can change the times.\n\nOr just type some times here.\n"
+  welcome = "Welcome to pairtimer.com!\n\
+All times and most text on this page are editable.\n\n\
+Try editing or clicking 'add' or 'Show Examples', or just type some times here.\n"
   var timers = $('#timers');
   timers.val(welcome);
   inc = 1;

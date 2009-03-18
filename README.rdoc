@@ -1,12 +1,18 @@
-== About
+= About
 Web-based timer to use during pair programming.  Source of pairtimer.com.
 
 If you fork it and come up with something interesting I can stick that on pairtimer.com too.
 
-== Limitations
+= Limitations
 Note: only works well in Firefox and the tabs are currently broken.
 
-== Things to try
+= Things to try
 - Click 'Show Examples'
 - Comment out lines with # to pause
 - Type times manually
+
+= Todo
+- Fix tabs
+- Make it work in safari / IE
+- Cookies
+  - Make it store and retrieve presets in users' cookies
