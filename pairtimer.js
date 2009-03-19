@@ -33,7 +33,7 @@ function clear() {
 }
 
 function clear_expired() {
-  $('#timers').val($('#timers').val().replace(/^[^0-9\n]+-:--[^0-9\n]+\n/gm, ""));
+  $('#timers').val($('#timers').val().replace(/^[^0-9\n]*-:--[^0-9\n]*\n/gm, ""));
   return false;
 }
 
@@ -53,8 +53,13 @@ function update() {
 
     if(/^ *#/.test(e)) {   // Don't increment # comment lines
     }else{
-      e = e.replace(/[0-9]+:[0-9][0-9]/g, function(time){
+      e = e.replace(/[0-9]+:[0-9][0-9]!?/g, function(time){
         nth++;
+
+        // TODO pull off ! if at end
+        ending_re = /!$/;
+        var ending = time.match(ending_re) || '';
+        time = time.replace(ending_re, '');
 
         time = time.split(':');
         seconds = Number(time[0])*60 + Number(time[1]);
@@ -65,9 +70,13 @@ function update() {
         // If it just became 0, make sound
         if(seconds <= 0) {
           seconds = 0;
-          play(sounds[nth]);
+          if(ending == "!")
+            play('buzzer.mp3');
+          else
+            play(sounds[nth]);
+
         }
-        return seconds_to_s(seconds);
+        return seconds_to_s(seconds) + ending;
       });
     }
 
@@ -109,7 +118,8 @@ function examples() {
   var the_examples = "\
 Examples:\n\
 0:12 0:09 0:06 0:03\n\
-twenty seconds     0:20\n\
+buzzer sound       00:20!\n\
+#paused            1:00\n\
 minute 1:00        (warning in 0:30)\n\
 every ten minutes  30:00 20:00 10:00\n\
 ";
@@ -163,7 +173,7 @@ $(function() {
   add_links();
   setup_events();
 
-  sounds = ['one.mp3', 'two.mp3', 'three.mp3', 'four.mp3'];
+  sounds = ['guitar.mp3', 'two.mp3', 'three.mp3', 'four.mp3'];
   welcome = "Welcome to pairtimer.com!\n\
 All times and most text on this page are editable.\n\n\
 Try editing or clicking 'add' or 'Show Examples', or just type some times here.\n"
