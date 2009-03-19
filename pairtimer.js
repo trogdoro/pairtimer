@@ -1,5 +1,5 @@
 // Add from 'add' field to 'timers' field
-function add(event) {
+function add() {
   var adds = $('#adds');
   // Get position of cursor CodeTree.menu/
   var cursor = adds.attr('selectionStart');
@@ -22,7 +22,8 @@ function add(event) {
 }
 function end() {
   var timers = $('#timers');
-  timers.val(timers.val().replace(/(^|[^0-9])[0-9]+:[0-9][0-9]/g, '$1-:--'));
+
+  timers.val(timers.val().replace(/(^|[^0-9])[0-9]+:[0-9][0-9]/, '$1-:--'));
 
   return false;
 }
@@ -173,7 +174,7 @@ $(function() {
   add_links();
   setup_events();
 
-  sounds = ['guitar.mp3', 'two.mp3', 'three.mp3', 'four.mp3'];
+  sounds = ['one.mp3', 'two.mp3', 'three.mp3', 'four.mp3'];
   welcome = "Welcome to pairtimer.com!\n\
 All times and most text on this page are editable.\n\n\
 Try editing or clicking 'add' or 'Show Examples', or just type some times here.\n"
