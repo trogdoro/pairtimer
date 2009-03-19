@@ -20,13 +20,20 @@ function add(event) {
 
   return false;
 }
+function end() {
+  var timers = $('#timers');
+  timers.val(timers.val().replace(/(^|[^0-9])[0-9]+:[0-9][0-9]/g, '$1-:--'));
+
+  return false;
+}
+
 function clear() {
   $('#timers').val('');
   return false;
 }
 
 function clear_expired() {
-  $('#timers').val($('#timers').val().replace(/^[^0-9\n]+:[^0-9\n]+\n/gm, ""));
+  $('#timers').val($('#timers').val().replace(/^[^0-9\n]+-:--[^0-9\n]+\n/gm, ""));
   return false;
 }
 
@@ -144,6 +151,7 @@ function setup_events() {
   $('#adds').click(add);
   $('#more').click(more);
   $('#clear').click(clear);
+  $('#end').click(end);
   $('#clear_expired').click(clear_expired);
 }
 

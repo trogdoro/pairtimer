@@ -17,9 +17,9 @@
       #increment { width:20px; text-align:center; }
       #menu { padding:0; }
       #menu li { display:inline; }
-      #menu li a { background:#ccf; padding:10px; float:left; border-right:1px solid #ccf; border-bottom:none; text-decoration:none; color:#000; font-weight:bold; font-size:12px;}
+      #menu li a { background:#ccf; padding:10px; float:left; border-right:1px solid #aae; border-bottom:none; text-decoration:none; color:#000; font-weight:bold; font-size:12px;}
       #menu li.active a { background:#dde; }
-      .content { float:left; clear:both; border:1px solid #ccf; border-top:none; border-left:none; background:#dde; padding:8px 12px 0; width:360px; margin:0 0 5px 0;}
+      .content { float:left; clear:both; border:1px solid #cce; border-top:none; border-left:none; background:#dde; padding:8px 12px 0; width:360px; margin:0 0 5px 0;}
       .footnote { color:#999; text-align:center; }
       .footnote a { color:#88e }
     </style>
@@ -36,8 +36,8 @@
       <div class="content" id="pairing">
         <table><tr>
           <td><textarea id='adds'></textarea></td>
-          <td><textarea id='presets'>plan 0:30  (0:15 warning)
-pairing cycle  6:00
+          <td><textarea id='presets'>plan           0:30/0:15
+pairing cycle  6:00/3:00
 1:00 task  (0:30 warning)
 1:30 task  (0:45 warning)
 2:00 task  (1:00 warning)
@@ -74,8 +74,10 @@ Add more here
       <p style='clear:both'/>
 
       <button id='more'>+ preset</button>
-      <button id='clear'>clear</button>
-      <button id='clear_expired'>clear expired</button>
+      <span style='padding-left:20px; font-size:10px;'>clear:</span>
+      <button id='end'>times</button>
+      <button id='clear_expired'>expired</button>
+      <button id='clear'>all</button>
       <p/>
       <textarea id='timers'></textarea>
 
