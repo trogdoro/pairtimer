@@ -52,34 +52,31 @@ function update() {
     if(n+1 == lines.length && e == "") return;   // If not the last one and blank
     nth = -1;
 
-    if(/^ *#/.test(e)) {   // Don't increment # comment lines
-    }else{
-      e = e.replace(/[0-9]+:[0-9][0-9]!?/g, function(time){
-        nth++;
+    e = e.replace(/([0-9]+:[0-9][0-9]!?|#.+)/g, function(time){
+      nth++;
 
-        // TODO pull off ! if at end
-        ending_re = /!$/;
-        var ending = time.match(ending_re) || '';
-        time = time.replace(ending_re, '');
+      if(time.match(/^#/)) return time;   // If a comment, just return it
 
-        time = time.split(':');
-        seconds = Number(time[0])*60 + Number(time[1]);
+      ending_re = /!$/;
+      var ending = time.match(ending_re) || '';
+      time = time.replace(ending_re, '');   // Pull off ! if at end
 
-        if(seconds <= 0) return "0:00";   // Do nothing if 0
-        seconds -= inc;
+      time = time.split(':');
+      seconds = Number(time[0])*60 + Number(time[1]);
 
-        // If it just became 0, make sound
-        if(seconds <= 0) {
-          seconds = 0;
-          if(ending == "!")
-            play('buzzer.mp3');
-          else
-            play(sounds[nth]);
+      if(seconds <= 0) return "0:00";   // Do nothing if 0
+      seconds -= inc;
 
-        }
-        return seconds_to_s(seconds) + ending;
-      });
-    }
+      if(seconds <= 0) {   // If it just became 0, make sound
+        seconds = 0;
+        if(ending == "!")
+          play('buzzer.mp3');
+        else
+          play(sounds[nth]);
+
+      }
+      return seconds_to_s(seconds) + ending;
+    });
 
     res += e+"\n";
   });
@@ -121,6 +118,7 @@ Examples:\n\
 0:12 0:09 0:06 0:03\n\
 buzzer sound       00:20!\n\
 #paused            1:00\n\
+2:00 #3:00\n\
 minute 1:00        (warning in 0:30)\n\
 every ten minutes  30:00 20:00 10:00\n\
 ";
@@ -177,7 +175,8 @@ $(function() {
   sounds = ['one.mp3', 'two.mp3', 'three.mp3', 'four.mp3'];
   welcome = "Welcome to pairtimer.com!\n\
 All times and most text on this page are editable.\n\n\
-Try editing or clicking 'add' or 'Show Examples', or just type some times here.\n"
+Try editing or clicking 'add' or 'Show Examples', or just type some times here.\n\n\
+example: 0:25\n"
   var timers = $('#timers');
   timers.val(welcome);
   inc = 1;
