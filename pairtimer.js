@@ -52,33 +52,61 @@ function update() {
     if(n+1 == lines.length && e == "") return;   // If not the last one and blank
     nth = -1;
 
-    e = e.replace(/([0-9]+:[0-9][0-9]!?|#.+)/g, function(time){
-      nth++;
+    // Split up into list of times and other things
+    e = e.replace(/`/g, "'");   // Ticks not allowed, use quotes
+    e = e.replace(/([0-9-]+:[0-9-][0-9-]|#|!)/g, "`$1`");
+    e = e.replace(/`+/g, "`");
+    var l = e.split('`');
 
-      if(time.match(/^#/)) return time;   // If a comment, just return it
+    var commented = false;
+    var nth = -1;
 
-      ending_re = /!$/;
-      var ending = time.match(ending_re) || '';
-      time = time.replace(ending_re, '');   // Pull off ! if at end
+    for(var i=0; i < l.length; i++) {
 
-      time = time.split(':');
-      seconds = Number(time[0])*60 + Number(time[1]);
+      var next_item = (i+1 < l.length) ? l[i+1] : '';
+      var next_next = (i+2 < l.length) ? l[i+2] : '';
 
-      if(seconds <= 0) return "0:00";   // Do nothing if 0
-      seconds -= inc;
-
-      if(seconds <= 0) {   // If it just became 0, make sound
-        seconds = 0;
-        if(ending == "!")
-          play('buzzer.mp3');
-        else
-          play(sounds[nth]);
-
+      // If a comment, remember we're commented
+      if(l[i] == '#') {
+        commented = true;
+        res += '#';
+        continue;
       }
-      return seconds_to_s(seconds) + ending;
-    });
 
-    res += e+"\n";
+      var is_time = l[i].match(/^[0-9-]+:[0-9-][0-9-]$/);
+
+      if(is_time && ! commented) {
+        nth++;
+        if((next_item == '/' && next_next.match(/^[0-9]/)) ||   // Skip when followed by /1:00
+          l[i].match(/-/)) {   // Skip if -:--
+          res += l[i];
+          continue;
+        }
+
+        var time = l[i].split(':');
+        seconds = Number(time[0])*60 + Number(time[1]);
+        if(seconds <= 0) {
+          res += "0:00";   // Do nothing if 0
+          continue;
+        }
+        seconds -= inc;
+
+        if(seconds <= 0) {   // If it just became 0, make sound
+          seconds = 0;
+          if(next_item == "!")
+            play('buzzer.mp3');
+          else
+            play(sounds[nth]);
+        }
+        res += seconds_to_s(seconds);
+        continue;
+      }
+
+      res += l[i];   // If any other string, just return it
+
+    }
+
+    res += "\n";
   });
 
   res = res.replace(/(^|[^0-9])0:00/g, '$1-:--');
@@ -88,8 +116,8 @@ function update() {
   timers.val(res);
   timers.attr('selectionStart', left);
   timers.attr('selectionEnd', right);
-
 }
+
 
 function iterate() {
   window.setTimeout('iterate()', inc*1000);
@@ -116,11 +144,12 @@ function examples() {
   var the_examples = "\
 Examples:\n\
 0:12 0:09 0:06 0:03\n\
-buzzer sound       00:20!\n\
+00:17\n\
+buzzer sound       00:21!\n\
+one at a time      0:10/0:10/0:27\n\
 #paused            1:00\n\
-2:00 #3:00\n\
-minute 1:00        (warning in 0:30)\n\
-every ten minutes  30:00 20:00 10:00\n\
+partially paused   1:30 #3:00\n\
+2:00               (warning in 1:00)\n\
 ";
   $('#timers').val( the_examples+"\n" + $('#timers').val() );
 }
