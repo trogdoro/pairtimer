@@ -1,60 +1,20 @@
 // Add from 'add' field to 'timers' field
-function add() {
-  var adds = $('#adds');
-  // Get position of cursor CodeTree.menu/
-  var cursor = adds.attr('selectionStart');
-  // Get substring up until cursor, and count the linebreaks
-  above = adds.val().substr(0, cursor);
-  matches = above.match(/\n/g);
-  line = matches ? matches.length : 0;
-
-  // Grab out nth preset
-  var add = $('#presets').val().split("\n")[line];
-
-  add = add.replace(/(^| )([0-9]+)( |$)/g, "$1$2:00$3");
-  add = add.replace(/(^| )([0-9]+)( |$)/g, "$1$2:00$3");
-  var timers = $('#timers')
-  timers.val( add+"\n" + timers.val().replace(welcome, '') );
-  timers.focus();
-  timers.attr('selectionStart', add.length); timers.attr('selectionEnd', add.length);
-
-  return false;
-}
-function end() {
-  var timers = $('#timers');
-
-  timers.val(timers.val().replace(/(^|[^0-9])[0-9]+:[0-9][0-9]/, '$1-:--'));
-
-  return false;
-}
-
-function clear() {
-  $('#timers').val('');
-  return false;
-}
-
-function clear_expired() {
-  $('#timers').val($('#timers').val().replace(/^[^0-9\n]*-:--[^0-9\n]*\n/gm, ""));
-  return false;
-}
-
-function start() {
-  window.setTimeout('iterate()', 1000);
-}
-
 function update() {
   var timers = $('#timers');
   var res = '';
 
-  var lines = timers.val().split("\n");
+  var orig = timers.val();
+  var lines = orig.split("\n");
 
   $.each(lines, function(n,e){
     if(n+1 == lines.length && e == "") return;   // If not the last one and blank
     nth = -1;
 
+    e = expand_abbreviations(e);
+
     // Split up into list of times and other things
     e = e.replace(/`/g, "'");   // Ticks not allowed, use quotes
-    e = e.replace(/([0-9-]+:[0-9-][0-9-]|#|!)/g, "`$1`");
+    e = e.replace(/([0-9-]+:[0-9-][0-9-]|#|\/|!)/g, "`$1`");
     e = e.replace(/`+/g, "`");
     var l = e.split('`');
 
@@ -76,8 +36,15 @@ function update() {
       var is_time = l[i].match(/^[0-9-]+:[0-9-][0-9-]$/);
 
       if(is_time && ! commented) {
+
+        // Don't count -:--'s
+        if(l[i] == '-:--') {
+          res += '-:--';
+          continue;
+        }
+
         nth++;
-        if((next_item == '/' && next_next.match(/^[0-9]/)) ||   // Skip when followed by /1:00
+        if((next_item == '/' && next_next != '-:--') ||   // Skip when followed by /1:00
           l[i].match(/-/)) {   // Skip if -:--
           res += l[i];
           continue;
@@ -113,10 +80,78 @@ function update() {
 
   var left = timers.attr('selectionStart');
   var right = timers.attr('selectionEnd');
+
+  if(orig == res) return;   // Do nothing if it didn't change
+
   timers.val(res);
   timers.attr('selectionStart', left);
   timers.attr('selectionEnd', right);
 }
+
+function expand_abbreviations(e) {
+  e = e.replace(/(^| )[0-9]+#[0-9]+\/[0-9]+( |$)/g, function(b){   // 1# -> 1:00 #
+    return b.replace(/[0-9]+/g, number_to_time).replace('#', '! #');
+  });
+  e = e.replace(/(^|#| )[0-9]+\/[0-9]+( |$)/g, function(b){   // 1/1
+    return b.replace(/[0-9]+/g, number_to_time);
+  });
+  return e;
+}
+
+// Replaces 14 -> 14:00, and 15 -> 0:15, etc
+function number_to_time(number) {
+  number = Number(number);
+  if(number == 15 || number == 30 || number == 45 || number == 90)
+    return "0:"+number;
+  else
+    return number+":00";
+}
+
+
+function add() {
+  var adds = $('#adds');
+  // Get position of cursor CodeTree.menu/
+  var cursor = adds.attr('selectionStart');
+  // Get substring up until cursor, and count the linebreaks
+  above = adds.val().substr(0, cursor);
+  matches = above.match(/\n/g);
+  line = matches ? matches.length : 0;
+
+  // Grab out nth preset
+  var add = $('#presets').val().split("\n")[line];
+
+  add = add.replace(/(^| )([0-9]+)( |$)/g, "$1$2:00$3");
+  add = add.replace(/(^| )([0-9]+)( |$)/g, "$1$2:00$3");
+  var timers = $('#timers')
+  timers.val( add+"\n" + timers.val().replace(welcome, '') );
+  timers.focus();
+  timers.attr('selectionStart', add.length); timers.attr('selectionEnd', add.length);
+
+  return false;
+}
+function end() {
+  var timers = $('#timers');
+
+  timers.val(timers.val().replace(/^.*\n/, ''));
+  //   timers.val(timers.val().replace(/(^|[^0-9])[0-9]+:[0-9][0-9]/, '$1-:--'));
+
+  return false;
+}
+
+function clear() {
+  $('#timers').val('');
+  return false;
+}
+
+function clear_expired() {
+  $('#timers').val($('#timers').val().replace(/^[^0-9\n]*-:--[^0-9\n]*\n/gm, ""));
+  return false;
+}
+
+function start() {
+  window.setTimeout('iterate()', 1000);
+}
+
 
 
 function iterate() {
@@ -216,3 +251,14 @@ example: 0:25\n"
 
   timers.focus();
 });
+
+function p(s) {
+  if(s == null)
+    s = "[blank]";
+
+  // Start at 0 if first
+  try {prepend_index++;}
+  catch(e) { prepend_index = 0; }
+
+  $('body').append('<div style="top:'+(prepend_index*13)+'px; margin-left:5px; position:absolute; font-size:10px; z-index:1002; color:#000; filter: alpha(opacity=85); -moz-opacity: .85; opacity: .85; background-color:#999;">'+s+'</div>');
+}
