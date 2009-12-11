@@ -81,9 +81,14 @@ function update() {
   var left = timers.attr('selectionStart');
   var right = timers.attr('selectionEnd');
 
+  orig = $.trim(orig);
+  res = $.trim(res);
   if(orig == res) return;   // Do nothing if it didn't change
 
-  timers.val(res);
+  var cursor_adjustment = res.length - orig.length;
+  timers.val(res + "\n");
+  left += cursor_adjustment;  if(left < 0) left = 0 ;
+  right += cursor_adjustment;  if(right < 0) right = 0 ;
   timers.attr('selectionStart', left);
   timers.attr('selectionEnd', right);
 }
