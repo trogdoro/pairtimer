@@ -3,6 +3,8 @@ function update() {
   var timers = $('#timers');
   var res = '';
 
+  var anything_expanded = false;
+
   var orig = timers.val();
   var lines = orig.split("\n");
 
@@ -10,7 +12,9 @@ function update() {
     if(n+1 == lines.length && e == "") return;   // If not the last one and blank
     nth = -1;
 
+    var before_expanded = e;
     e = expand_abbreviations(e);
+    if(before_expanded != e) anything_expanded = true;
 
     // Split up into list of times and other things
     e = e.replace(/`/g, "'");   // Ticks not allowed, use quotes
@@ -81,14 +85,16 @@ function update() {
   var left = timers.attr('selectionStart');
   var right = timers.attr('selectionEnd');
 
-  orig = $.trim(orig);
-  res = $.trim(res);
+  orig = orig.replace(/\n+$/, '');
+  res = res.replace(/\n+$/, '');
   if(orig == res) return;   // Do nothing if it didn't change
 
   var cursor_adjustment = res.length - orig.length;
   timers.val(res + "\n");
-  left += cursor_adjustment;  if(left < 0) left = 0 ;
-  right += cursor_adjustment;  if(right < 0) right = 0 ;
+  if(anything_expanded) {
+    left += cursor_adjustment;  if(left < 0) left = 0 ;
+    right += cursor_adjustment;  if(right < 0) right = 0 ;
+  }
   timers.attr('selectionStart', left);
   timers.attr('selectionEnd', right);
 }
@@ -165,7 +171,7 @@ function iterate() {
 }
 
 function play(surl) {
-  document.getElementById("soundspan").innerHTML = "<embed src='"+surl+"' hidden=true autostart=true loop=false>";
+  $("#jplayer").setFile(surl).play();
 }
 
 function seconds_to_s(seconds) {
@@ -192,6 +198,10 @@ partially paused   1:30 #3:00\n\
 2:00               (warning in 1:00)\n\
 ";
   $('#timers').val( the_examples+"\n" + $('#timers').val() );
+}
+
+function save_to_cookies() {
+  // TODO
 }
 
 function add_links() {
@@ -226,6 +236,7 @@ function more() {
 
 function setup_events() {
   $('#presets').keyup(add_links);
+  $('#presets').keyup(save_to_cookies);
   $('#adds').click(add);
   $('#more').click(more);
   $('#clear').click(clear);
@@ -233,8 +244,23 @@ function setup_events() {
   $('#clear_expired').click(clear_expired);
 }
 
+function p(s) {
+  if(s == null)
+    s = "[blank]";
+
+  // Start at 0 if first
+  try {prepend_index++;}
+  catch(e) { prepend_index = 0; }
+
+  $('body').append('<div style="top:'+(prepend_index*13)+'px; margin-left:5px; position:absolute; font-size:10px; z-index:1002; color:#000; filter: alpha(opacity=85); -moz-opacity: .85; opacity: .85; background-color:#999;">'+s+'</div>');
+}
+
 // On startup, start timer
 $(function() {
+
+  $("#jplayer").jPlayer( {
+    //ready: function(){p('hi')},
+    swfPath: "." });
 
   $('#menu').tabify();
 
@@ -257,13 +283,3 @@ example: 0:25\n"
   timers.focus();
 });
 
-function p(s) {
-  if(s == null)
-    s = "[blank]";
-
-  // Start at 0 if first
-  try {prepend_index++;}
-  catch(e) { prepend_index = 0; }
-
-  $('body').append('<div style="top:'+(prepend_index*13)+'px; margin-left:5px; position:absolute; font-size:10px; z-index:1002; color:#000; filter: alpha(opacity=85); -moz-opacity: .85; opacity: .85; background-color:#999;">'+s+'</div>');
-}
