@@ -9,6 +9,7 @@ function update() {
   var lines = orig.split("\n");
 
   var shortest_time = 9999999;
+  var shortest_time_description = "";
 
   $.each(lines, function(n,e){
     if(n+1 == lines.length && e == "") return;   // If not the last one and blank
@@ -27,7 +28,7 @@ function update() {
     var commented = false;
     var nth = -1;
 
-    for(var i=0; i < l.length; i++) {
+    for(var i=0; i < l.length; i++) {   // For each token in line
 
       var next_item = (i+1 < l.length) ? l[i+1] : '';
       var next_next = (i+2 < l.length) ? l[i+2] : '';
@@ -72,18 +73,21 @@ function update() {
             play(sounds[nth]);
         }
         res += seconds_to_s(seconds);
-        if(seconds < shortest_time) shortest_time = seconds;
+
+        if(seconds < shortest_time){
+          shortest_time = seconds;
+          shortest_time_description = before_expanded.match(/[a-z][a-z _]+/i);
+        }
         continue;
       }
 
       res += l[i];   // If any other string, just return it
-
     }
 
     res += "\n";
   });
 
-  document.title = shortest_time < 9999999 ? (seconds_to_s(shortest_time)+" - pairtimer.com") : "pairtimer.com";
+  document.title = shortest_time < 9999999 ? "("+(seconds_to_s(shortest_time)+") "+shortest_time_description+" - pairtimer.com") : "pairtimer.com";
 
   res = res.replace(/(^|[^0-9])0:00/g, '$1-:--');
 
@@ -272,7 +276,7 @@ $(function() {
   add_links();
   setup_events();
 
-  sounds = ['guitar.mp3', 'very_high.mp3', 'three.mp3', 'four.mp3'];
+  sounds = ['guitar.mp3', 'low.mp3', 'three.mp3', 'four.mp3'];
   welcome = "Welcome to pairtimer.com!\n\
 All times and most text on this page are editable.\n\n\
 Try editing or clicking 'add' or 'Show Examples', or just type some times here.\n\n\
