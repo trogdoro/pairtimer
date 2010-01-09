@@ -77,6 +77,7 @@ function update() {
         if(seconds < shortest_time){
           shortest_time = seconds;
           shortest_time_description = before_expanded.match(/[a-z][a-z _]+/i);
+          shortest_time_description = String(shortest_time_description).replace(/ +/g, ' ').replace(/ $/g, '');
         }
         continue;
       }
