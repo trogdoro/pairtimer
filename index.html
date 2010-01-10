@@ -3,6 +3,7 @@
     <title>pairtimer.com</title>
     <script type="text/javascript" src="jquery.js"></script>
     <script type="text/javascript" src="pairtimer.js"></script>
+    <script type="text/javascript" src="jquerycookie.js"></script>
     <script type="text/javascript" src="jquery.tabify-1.4.source.js"></script>
     <script type="text/javascript" src="jquery.jplayer.js"></script>
 
@@ -11,10 +12,10 @@
       body, td { font-family:verdana; font-size:13px; }
       body, td, textarea { color:#333; border:0px;}
       .section { margin:10px }
-      #adds { width:40px; height:110px; padding:2px; color:#55e; text-decoration:underline; cursor:pointer; }
-      #presets { width:320px; height:110px; padding:2px; }
+      .adds { width:40px; height:110px; padding:2px; color:#55e; text-decoration:underline; cursor:pointer; }
+      .presets { width:320px; height:110px; padding:2px; }
       #timers { width:100%; height:150px; padding:2px; background-color:#eee; }
-      #adds, #presets { background-color:#dde; }
+      .adds, .presets { background-color:#dde; }
       textarea { font-size:15px; font-weight:bold; overflow:hidden; font-family:courier; }
       #increment { width:20px; text-align:center; }
       #menu { padding:0; }
@@ -31,14 +32,14 @@
 
       <ul id="menu">
         <li class="active"><a href="#pairing">Pair Programming</a></li>
-        <li><a href="#yours">Yours</a></li>
         <li><a href="#general">General</a></li>
+        <li><a href="#yours" style="font-style:italic">Yours</a></li>
       </ul>
 
       <div class="content" id="pairing">
         <table><tr>
-          <td><textarea id='adds'></textarea></td>
-          <td><textarea id='presets'>plan           0:30 0:15
+          <td><textarea class='adds'></textarea></td>
+          <td><textarea class='presets'>plan           0:30 0:15
 pairing cycle  6:00
 pairing cycle  6:00 (warn 3:00)
 1:00 task  (warn 0:30)
@@ -50,21 +51,10 @@ pairing cycle  6:00 (warn 3:00)
         </tr></table>
       </div>
 
-      <div class="content" id="yours">
-        <table><tr>
-          <td><textarea id='adds'></textarea></td>
-          <td><textarea id='presets'>1:00 Update Me
-2:00 Update Me
-Add more here...
-</textarea></td>
-        </tr></table>
-      </div>
-
       <div class="content" id="general">
         <table><tr>
-          <td><textarea id='adds'></textarea></td>
-          <td><textarea id='presets'>not implemented yet:(
-1:00
+          <td><textarea class='adds'></textarea></td>
+          <td><textarea class='presets'>1:00
 2:00
 3:00
 4:00
@@ -73,6 +63,18 @@ Add more here...
 </textarea></td>
         </tr></table>
       </div>
+
+      <div class="content" id="yours">
+        <table><tr>
+          <td><textarea class='adds'></textarea></td>
+          <td><textarea class='presets'>1:00 Update Me
+2:00 Update Me
+Add more here...
+</textarea></td>
+        </tr></table>
+        <center style="font-style:italic; color:#88a; font-size:11px; margin-bottom:4px;">(text is saved across sessions)</center>
+      </div>
+
 
 
       <p style='clear:both'/>

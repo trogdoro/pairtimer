@@ -1,5 +1,10 @@
 // Add from 'add' field to 'timers' field
 function update() {
+  //   $.each($('.content'), function(i,e){
+  //   e = $(e);
+  //     var adds = e.find(".adds");
+  //     var presets = e.find(".presets");
+
   var timers = $('#timers');
   var res = '';
 
@@ -107,6 +112,7 @@ function update() {
   }
   timers.attr('selectionStart', left);
   timers.attr('selectionEnd', right);
+  //   });
 }
 
 function expand_abbreviations(e) {
@@ -129,8 +135,8 @@ function number_to_time(number) {
 }
 
 
-function add() {
-  var adds = $('#adds');
+function add(e) {
+  var adds = $(e.target);
   // Get position of cursor CodeTree.menu/
   var cursor = adds.attr('selectionStart');
   // Get substring up until cursor, and count the linebreaks
@@ -139,7 +145,8 @@ function add() {
   line = matches ? matches.length : 0;
 
   // Grab out nth preset
-  var add = $('#presets').val().split("\n")[line];
+  var presets = adds.parent().parent().find('.presets')
+  var add = presets.val().split("\n")[line];
 
   add = add.replace(/(^| )([0-9]+)( |$)/g, "$1$2:00$3");
   add = add.replace(/(^| )([0-9]+)( |$)/g, "$1$2:00$3");
@@ -211,32 +218,37 @@ partially paused   1:30 #3:00\n\
 }
 
 function save_to_cookies() {
-  // TODO
+  $.cookie('yours', $('#yours .presets').val(), { expires:(365*10), path:'/' });
 }
 
 function add_links() {
-  var presets = $('#presets');
-  var lines = presets.val().split("\n");
-  var txt = "";
-  $.each(lines, function(n,e){   // For each line in presets
 
-    // If there's something on the line, add a link
-    if($.trim(e).length > 0)
-      txt += "add";
+  $.each($('.content'), function(i,e){
+    e = $(e);
+    var adds = e.find(".adds");
+    var presets = e.find(".presets");
 
-    if(n+1 == lines.length) return;   // If not the last one and blank
-    txt += "\n";
-  });
+    var lines = presets.val().split("\n");
+    var txt = "";
+    $.each(lines, function(n,e){   // For each line in presets
 
-  var adds = $('#adds');
+      if($.trim(e).length > 0)   // If there's something on the line, add a link
+        txt += "add";
+
+      if(n+1 == lines.length) return;   // If not the last one and blank
+      txt += "\n";
+    });
+
     // If there's a line, add "add"
-  adds.val(txt);
-  var height = 16 * lines.length + 5;
-  adds.height(height); presets.height(height);
+    adds.val(txt);
+    var height = 16 * lines.length + 5;
+    adds.height(height); presets.height(height);
+
+  });
 }
 
 function more() {
-  var presets = $('#presets')
+  var presets = $('.presets')
   presets.val(presets.val()+":00\n");
   add_links();
   presets.focus();
@@ -245,9 +257,9 @@ function more() {
 }
 
 function setup_events() {
-  $('#presets').keyup(add_links);
-  $('#presets').keyup(save_to_cookies);
-  $('#adds').click(add);
+  $('.presets').keyup(add_links)
+  $('#yours .presets').keyup(save_to_cookies);
+  $('.adds').click(add);
   $('#more').click(more);
   $('#clear').click(clear);
   $('#end').click(end);
@@ -274,6 +286,10 @@ $(function() {
 
   $('#menu').tabify();
 
+  // Prepopulate 'Yours' tab if cookie
+  var cookie = $.cookie('yours');
+  if(cookie) $('#yours .presets').val(cookie);
+
   add_links();
   setup_events();
 
@@ -293,3 +309,13 @@ example: 0:25\n"
   timers.focus();
 });
 
+$.fn.blink = function(times, orig) {
+  times = times || 2;
+  var el = $(this);
+  for(x=1;x<=times;x++) {
+    el.animate({opacity: 0.0}, {easing: 'swing', duration: 200});
+    el.animate({opacity: 1.0}, {easing: 'swing', duration: 200});
+  }
+  if(orig) el.animate({opacity: orig}, {duration: 50});
+  return this;
+};
