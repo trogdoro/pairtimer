@@ -5,6 +5,10 @@ function update() {
   //     var adds = e.find(".adds");
   //     var presets = e.find(".presets");
 
+  current_time = Math.round(new Date().getTime() / 1000);
+  elapsed = current_time - last_time;
+  last_time = Math.round(new Date().getTime() / 1000);
+
   var timers = $('#timers');
   var res = '';
 
@@ -68,7 +72,7 @@ function update() {
           res += "0:00";   // Do nothing if 0
           continue;
         }
-        seconds -= inc;
+        seconds -= elapsed;
 
         if(seconds <= 0) {   // If it just became 0, make sound
           seconds = 0;
@@ -81,8 +85,8 @@ function update() {
 
         if(seconds < shortest_time){
           shortest_time = seconds;
-          shortest_time_description = before_expanded.match(/[a-z][a-z _]+/i);
-          shortest_time_description = String(shortest_time_description).replace(/ +/g, ' ').replace(/ $/g, '');
+          shortest_time_description = before_expanded.match(/[a-z][a-z _]+/i) || "";
+          shortest_time_description = String(shortest_time_description).replace(/ +/g, ' ').replace(/ $/g, '') // || "";
         }
         continue;
       }
@@ -277,6 +281,17 @@ function p(s) {
   $('body').append('<div style="top:'+(prepend_index*13)+'px; margin-left:5px; position:absolute; font-size:10px; z-index:1002; color:#000; filter: alpha(opacity=85); -moz-opacity: .85; opacity: .85; background-color:#999;">'+s+'</div>');
 }
 
+$.fn.blink = function(times, orig) {
+  times = times || 2;
+  var el = $(this);
+  for(x=1;x<=times;x++) {
+    el.animate({opacity: 0.0}, {easing: 'swing', duration: 200});
+    el.animate({opacity: 1.0}, {easing: 'swing', duration: 200});
+  }
+  if(orig) el.animate({opacity: orig}, {duration: 50});
+  return this;
+};
+
 // On startup, start timer
 $(function() {
 
@@ -304,18 +319,9 @@ example: 0:25\n"
   $('#increment').val(inc);
   $('#increment').keyup(function(){$(inc = Number($(this).val()))});
 
+  last_time = Math.round(new Date().getTime() / 1000);
   start();
 
   timers.focus();
 });
 
-$.fn.blink = function(times, orig) {
-  times = times || 2;
-  var el = $(this);
-  for(x=1;x<=times;x++) {
-    el.animate({opacity: 0.0}, {easing: 'swing', duration: 200});
-    el.animate({opacity: 1.0}, {easing: 'swing', duration: 200});
-  }
-  if(orig) el.animate({opacity: orig}, {duration: 50});
-  return this;
-};
